@@ -1,0 +1,149 @@
+1. Write a query to display all the first_name  in upper case
+   A: select upper(FIRST_NAME) from Worker;
+
+
+2. Write a querty to display unique department from workers table
+   A: select distinct DEPARTMENT from worker;
+
+3. Write an SQL query to print the first three characters of FIRST_NAME from Worker table
+   A:select substring(FIRST_NAME,1,3) from worker;
+
+4. Write an SQL query to find the position of the alphabet (‘a’) in the first name column ‘Amitabh’ from Worker table. 
+   A: select  position('a' in FIRST_NAME) 
+      from worker 
+      where FIRST_NAME = 'Amitabh';
+
+5. Write an SQL query that fetches the unique values of DEPARTMENT from Worker table and prints its length
+   A: select distinct DEPARTMENT, LENGTH(DEPARTMENT) AS DEPARTMENT_LENGTH
+      from worker;
+
+6. Write an SQL query to print all Worker details from the Worker table order by FIRST_NAME Ascending and DEPARTMENT Descending
+   A: select * from worker  
+      order by FIRST_NAME ASC,
+      DEPARTMENT DESC;
+
+7. Write a query to get workers whose name are Vipul and Satish
+   A: select * from worker 
+       where FIRST_NAME in ('Vipul','Satish');
+
+8. Write an SQL query to print details of the Workers whose FIRST_NAME contains 'a'
+   A: select * from worker
+       where FIRST_NAME like '%a%';
+
+9. Write an SQL query to print details of the Workers whose FIRST_NAME ends with ‘h’ and contains six alphabets
+   A: select * from worker
+      where FIRST_NAME like '_____h';
+
+10. Write an SQL query to print details of the Workers whose SALARY lies between 100000 and 500000
+    A: select * from worker
+       where SALARY between 100000 and 500000;
+
+11. Write an SQL query to print details of the Workers who have joined in Feb’2014
+    A: SELECT *, monthname(JOINING_DATE) as Joining_Month
+       from worker
+       where year(JOINING_DATE) = 2014 and month(JOINING_DATE) = 2;
+
+12. Write an SQL query to fetch the count of employees working in the department ‘Admin’
+    A: select * from worker 
+       where DEPARTMENT='Admin';
+
+13. Write an SQL query to fetch the no. of workers for each department in the descending order
+    A: select count(*),DEPARTMENT from worker
+       group by DEPARTMENT 
+       order by DEPARTMENT desc;
+
+
+14. Write a query to display workerrs who are managers --JOIN
+    A: select w1.* 
+       from worker w1
+       join TITLE t1
+       where WORKER_ID=WORKER_REF_ID;
+
+15. Write query to find duplicate rows title table -- JOIN
+    A: select w1.FIRST_NAME,t1.WORKER_TITLE
+       from worker w1
+       join TITLE t1
+       where WORKER_ID=WORKER_REF_ID;
+
+16. Write an SQL query to show all workers who got the bonus along with bonus amount
+    A: select w.WORKER_ID, w.FIRST_NAME, b.BONUS_AMOUNT
+       FROM worker w
+       JOIN bonus b ON w.WORKER_ID = b.WORKER_REF_ID;
+
+17. Write a query to find employees in worker table that do not exist in bonus table (ie did not get bonus)
+    A: select w.WORKER_ID, w.FIRST_NAME
+       from worker w
+       left join Bonus b ON w.WORKER_ID = b.WORKER_REF_ID
+       where b.WORKER_REF_ID IS NULL;
+
+18. Write a query to find the highest 2 salaries
+    A: select SALARY from worker 
+       limit 2;
+
+19. Find 2nd highest without using TOP or LIMIT
+    A: select max(SALARY) AS SECOND_HIGHEST_SALARY
+       from worker
+       where SALARY < (
+            select max(SALARY)
+            from worker
+        );
+
+
+20. Find people who have the same salary
+    A: select w1.FIRST_NAME, w1.LAST_NAME, w1.SALARY
+       from worker w1
+       join worker w2 on w1.SALARY = w2.SALARY
+       where w1.WORKER_ID != w2.WORKER_ID;
+
+
+-------
+21. Write a query to fetch 1st 50% records without using Top
+    A: with rankedRecords AS (
+       select *, 
+       ntile(2) over (order by WORKER_ID) AS Quartile
+       from worker
+       )
+       select * 
+       from rankedRecords 
+       where Quartile = 1;
+
+22. Write a query to select a department with more than 3 people in worker table
+    A: select DEPARTMENT,count(DEPARTMENT)
+       from worker
+       group by DEPARTMENT
+       having count(DEPARTMENT)>=3;
+
+23. Write a query to select 1st and last row of a worker table
+    A: (SELECT * FROM worker
+       ORDER BY WORKER_ID
+       LIMIT 1)
+       UNION
+       (SELECT * FROM worker
+       ORDER BY WORKER_ID DESC
+       LIMIT 1);
+
+
+24. Write a query to select last 5 entries from worker table
+    A: select * from worker
+       order by WORKER_ID desc
+       limit 5;
+
+
+25. Write a query to select people with highest salary in each group
+    A: SELECT DEPARTMENT, FIRST_NAME, SALARY
+       FROM worker
+       WHERE (DEPARTMENT, SALARY) IN (
+       SELECT DEPARTMENT, max(SALARY)
+       FROM worker
+       GROUP BY department
+       );
+
+26. Write a query to fetch departments along with the total salaries paid for each of them
+    A: select DEPARTMENT, sum(SALARY) as 'total_Salary'
+       from worker
+       group by DEPARTMENT;
+
+27. Write a query to fetch the names of workers who earn the highest salary
+    A: select FIRST_NAME
+       from worker
+       where SALARY = (select max(SALARY) from worker);
